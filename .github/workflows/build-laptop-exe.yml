@@ -1,0 +1,26 @@
+name: Build Laptop EXE
+
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install packages
+        run: pip install pyinstaller winsdk websockets pycaw comtypes
+
+      - name: Build exe
+        run: pyinstaller --onefile --name MicGuardAgent --collect-all winsdk --collect-all pycaw --collect-all comtypes --hidden-import websockets laptop/laptop_agent.py
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: MicGuardAgent-exe
+          path: dist/MicGuardAgent.exe
